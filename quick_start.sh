@@ -99,13 +99,13 @@ db.close()
 
 print("")
 print("✅ Backend ready!")
-print("📡 Starting API server on http://localhost:8000")
-print("📚 API docs at http://localhost:8000/docs")
+print("📡 Starting API server on http://localhost:8080")
+print("📚 API docs at http://localhost:8080/docs")
 print("")
 
 # Start uvicorn
 import uvicorn
-uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+uvicorn.run("app.main:app", host="0.0.0.0", port=8080, reload=True)
 EOF
 
 cd ..
@@ -130,7 +130,7 @@ echo ""
 echo "Terminal 1 (Backend): cd backend && python3 start_backend.py"
 echo "Terminal 2 (Frontend): cd frontend && npm run dev"
 echo ""
-echo "Then open: http://localhost:3000"
+echo "Then open: http://localhost:5173"
 echo ""
 echo "═══════════════════════════════════════"
 echo ""
@@ -151,7 +151,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
     echo ""
     echo "✅ Application started!"
-    echo "🌐 Open http://localhost:3000 in your browser"
+    echo "🌐 Open http://localhost:5173 in your browser"
     echo ""
     echo "Press Ctrl+C to stop"
 

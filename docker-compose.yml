@@ -53,7 +53,7 @@ services:
       - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
       - DEBUG=True
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
       - ./backend:/app
     depends_on:
@@ -61,7 +61,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
   # Celery Worker (for background intelligence gathering)
   celery_worker:

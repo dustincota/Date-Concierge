@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     # Server
     HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    PORT: int = 8080
 
     # Database
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/date_concierge"

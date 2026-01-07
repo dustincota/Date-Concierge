@@ -5,7 +5,7 @@
 
 set -e
 
-API_URL="http://localhost:8000/api"
+API_URL="http://localhost:8080/api"
 echo "🎬 Date Concierge API Demo"
 echo "=========================="
 echo ""
@@ -164,10 +164,10 @@ echo "  6. ✓ Both users voted"
 echo "  7. ✓ Got collaborative results"
 echo ""
 echo "Next steps:"
-echo "  - Open http://localhost:3000 in your browser"
+echo "  - Open http://localhost:5173 in your browser"
 echo "  - Login as alex@demo.com or jordan@demo.com (password: demo123)"
-echo "  - See the session at http://localhost:3000/session/$SESSION_ID"
-echo "  - View API docs at http://localhost:8000/docs"
+echo "  - See the session at http://localhost:5173/session/$SESSION_ID"
+echo "  - View API docs at http://localhost:8080/docs"
 echo ""
 echo "Session Details:"
 echo "  ID: $SESSION_ID"
