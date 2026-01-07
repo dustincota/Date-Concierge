@@ -2,12 +2,12 @@
 User and user-related database models.
 """
 
-from sqlalchemy import Column, String, Boolean, Integer, DECIMAL, ARRAY, ForeignKey, DateTime, Text
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, String, Boolean, Integer, DECIMAL, ForeignKey, DateTime, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
 from app.database import Base
+from app.types import GUID
 
 
 class User(Base):
@@ -15,7 +15,7 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False, index=True)
     name = Column(String)
     hashed_password = Column(String, nullable=False)
@@ -33,8 +33,8 @@ class UserLocation(Base):
 
     __tablename__ = "user_locations"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     label = Column(String)  # "home", "work", "partner's place"
     address = Column(Text)
     latitude = Column(DECIMAL(10, 8))
@@ -51,13 +51,13 @@ class UserPreferences(Base):
 
     __tablename__ = "user_preferences"
 
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     default_budget_min = Column(Integer)  # 1-4 ($-$$$$)
     default_budget_max = Column(Integer)
-    cuisines_loved = Column(ARRAY(String))
-    cuisines_avoid = Column(ARRAY(String))
-    dietary_restrictions = Column(ARRAY(String))
-    vibes = Column(ARRAY(String))  # romantic, adventurous, casual, etc.
+    cuisines_loved = Column(JSON)  # List of strings
+    cuisines_avoid = Column(JSON)  # List of strings
+    dietary_restrictions = Column(JSON)  # List of strings
+    vibes = Column(JSON)  # List of strings - romantic, adventurous, casual, etc.
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships

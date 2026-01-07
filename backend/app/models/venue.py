@@ -2,8 +2,8 @@
 Venue and venue intelligence database models.
 """
 
-from sqlalchemy import Column, String, Integer, DECIMAL, ARRAY, ForeignKey, DateTime, Text, Float
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, String, Integer, DECIMAL, ForeignKey, DateTime, Text, Float, JSON
+from app.types import GUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
@@ -15,7 +15,7 @@ class Venue(Base):
 
     __tablename__ = "venues"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False, index=True)
     address = Column(Text)
     neighborhood = Column(String, index=True)
@@ -25,7 +25,7 @@ class Venue(Base):
 
     # Categorization
     category = Column(String)  # restaurant, bar, cafe, activity
-    cuisines = Column(ARRAY(String))
+    cuisines = Column(JSON)
     price_level = Column(Integer)  # 1-4 ($-$$$$)
     rating = Column(DECIMAL(2, 1))
 
@@ -36,7 +36,7 @@ class Venue(Base):
     yelp_id = Column(String)
 
     # Contact and hours
-    hours = Column(JSONB)  # {"monday": {"open": "17:00", "close": "23:00"}, ...}
+    hours = Column(JSON)  # {"monday": {"open": "17:00", "close": "23:00"}, ...}
     phone = Column(String)
     website = Column(String)
 
@@ -55,16 +55,16 @@ class VenueIntelligence(Base):
 
     __tablename__ = "venue_intelligence"
 
-    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), primary_key=True)
+    venue_id = Column(GUID, ForeignKey("venues.id", ondelete="CASCADE"), primary_key=True)
 
-    # Structured intelligence (stored as JSONB)
-    seating_recommendations = Column(JSONB)  # List[SeatingRecommendation]
-    dish_recommendations = Column(JSONB)  # List[DishRecommendation]
-    timing_insights = Column(JSONB)  # TimingInsight
-    commute_insights = Column(JSONB)  # CommuteInsight
-    vibe_check = Column(JSONB)  # VibeCheck
-    insider_tips = Column(JSONB)  # List[InsiderTip]
-    warnings = Column(ARRAY(String))
+    # Structured intelligence (stored as JSON)
+    seating_recommendations = Column(JSON)  # List[SeatingRecommendation]
+    dish_recommendations = Column(JSON)  # List[DishRecommendation]
+    timing_insights = Column(JSON)  # TimingInsight
+    commute_insights = Column(JSON)  # CommuteInsight
+    vibe_check = Column(JSON)  # VibeCheck
+    insider_tips = Column(JSON)  # List[InsiderTip]
+    warnings = Column(JSON)
 
     # Scores
     date_score = Column(DECIMAL(3, 1))  # 0-10
@@ -72,11 +72,11 @@ class VenueIntelligence(Base):
     intelligence_score = Column(DECIMAL(3, 2))  # 0-1, completeness of data
 
     # Raw source data
-    reddit_data = Column(JSONB)
-    tiktok_data = Column(JSONB)
-    google_reviews_summary = Column(JSONB)
-    resy_reviews_summary = Column(JSONB)
-    opentable_reviews_summary = Column(JSONB)
+    reddit_data = Column(JSON)
+    tiktok_data = Column(JSON)
+    google_reviews_summary = Column(JSON)
+    resy_reviews_summary = Column(JSON)
+    opentable_reviews_summary = Column(JSON)
 
     # Metadata
     last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -91,10 +91,10 @@ class IntelligenceJob(Base):
 
     __tablename__ = "intelligence_jobs"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    venue_id = Column(GUID, ForeignKey("venues.id", ondelete="CASCADE"), nullable=False)
     status = Column(String, default="pending")  # pending, running, completed, failed
-    agents_completed = Column(ARRAY(String))
+    agents_completed = Column(JSON)
     error_message = Column(Text)
     started_at = Column(DateTime(timezone=True))
     completed_at = Column(DateTime(timezone=True))

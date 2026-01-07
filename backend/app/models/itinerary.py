@@ -2,12 +2,12 @@
 Itinerary and reservation models.
 """
 
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, Date, Time
-from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, Date, Time, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
 from app.database import Base
+from app.types import GUID
 
 
 class Itinerary(Base):
@@ -15,11 +15,11 @@ class Itinerary(Base):
 
     __tablename__ = "itineraries"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey("planning_sessions.id"), unique=True)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    session_id = Column(GUID, ForeignKey("planning_sessions.id"), unique=True)
     title = Column(String)
     date = Column(Date, nullable=False)
-    weather_data = Column(JSONB)  # Weather forecast for the date
+    weather_data = Column(JSON)  # Weather forecast for the date
     status = Column(String, default="draft")  # draft, confirmed, completed
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -34,9 +34,9 @@ class ItineraryStop(Base):
 
     __tablename__ = "itinerary_stops"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    itinerary_id = Column(UUID(as_uuid=True), ForeignKey("itineraries.id", ondelete="CASCADE"), nullable=False)
-    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    itinerary_id = Column(GUID, ForeignKey("itineraries.id", ondelete="CASCADE"), nullable=False)
+    venue_id = Column(GUID, ForeignKey("venues.id"), nullable=False)
     stop_order = Column(Integer, nullable=False)  # 1, 2, 3...
 
     # Timing
@@ -46,13 +46,13 @@ class ItineraryStop(Base):
     # Intelligence-based recommendations
     notes = Column(Text)
     seating_request = Column(String)  # "Request patio table 12"
-    order_recommendations = Column(ARRAY(String))  # ["Cacio e Pepe", "Orange Wine"]
+    order_recommendations = Column(JSON)  # List of strings: ["Cacio e Pepe", "Orange Wine"]
 
     # Backup
-    backup_venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id"))
+    backup_venue_id = Column(GUID, ForeignKey("venues.id"))
 
     # Travel from previous stop
-    travel_from_previous = Column(JSONB)  # {"mode": "walk", "duration_minutes": 15, "instructions": "..."}
+    travel_from_previous = Column(JSON)  # {"mode": "walk", "duration_minutes": 15, "instructions": "..."}
 
     # Relationships
     itinerary = relationship("Itinerary", back_populates="stops")
@@ -66,9 +66,9 @@ class Reservation(Base):
 
     __tablename__ = "reservations"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    itinerary_stop_id = Column(UUID(as_uuid=True), ForeignKey("itinerary_stops.id", ondelete="CASCADE"))
-    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    itinerary_stop_id = Column(GUID, ForeignKey("itinerary_stops.id", ondelete="CASCADE"))
+    venue_id = Column(GUID, ForeignKey("venues.id"), nullable=False)
 
     # Reservation details
     date = Column(Date, nullable=False)

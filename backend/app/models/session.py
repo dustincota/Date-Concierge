@@ -2,8 +2,8 @@
 Planning session models for collaborative date planning.
 """
 
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, Date
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, Date, JSON
+from app.types import GUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
@@ -15,9 +15,9 @@ class PlanningSession(Base):
 
     __tablename__ = "planning_sessions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
     name = Column(String)  # "Saturday Night Date"
-    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    created_by = Column(GUID, ForeignKey("users.id"), nullable=False)
     invite_code = Column(String, unique=True, nullable=False, index=True)
 
     # Planning details
@@ -25,7 +25,7 @@ class PlanningSession(Base):
     status = Column(String, default="draft")  # draft, voting, finalizing, confirmed
 
     # Merged constraints (intersection of all participant preferences)
-    merged_constraints = Column(JSONB)
+    merged_constraints = Column(JSON)
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -44,11 +44,11 @@ class SessionParticipant(Base):
 
     __tablename__ = "session_participants"
 
-    session_id = Column(UUID(as_uuid=True), ForeignKey("planning_sessions.id", ondelete="CASCADE"), primary_key=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    session_id = Column(GUID, ForeignKey("planning_sessions.id", ondelete="CASCADE"), primary_key=True)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     role = Column(String, default="participant")  # organizer, participant
-    location_id = Column(UUID(as_uuid=True), ForeignKey("user_locations.id"))
-    preferences_override = Column(JSONB)  # Session-specific preferences
+    location_id = Column(GUID, ForeignKey("user_locations.id"))
+    preferences_override = Column(JSON)  # Session-specific preferences
     joined_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
@@ -62,10 +62,10 @@ class SessionVenue(Base):
 
     __tablename__ = "session_venues"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey("planning_sessions.id", ondelete="CASCADE"), nullable=False)
-    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), nullable=False)
-    suggested_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    session_id = Column(GUID, ForeignKey("planning_sessions.id", ondelete="CASCADE"), nullable=False)
+    venue_id = Column(GUID, ForeignKey("venues.id", ondelete="CASCADE"), nullable=False)
+    suggested_by = Column(GUID, ForeignKey("users.id"), nullable=False)
     suggested_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
@@ -78,9 +78,9 @@ class VenueVote(Base):
 
     __tablename__ = "venue_votes"
 
-    session_id = Column(UUID(as_uuid=True), ForeignKey("planning_sessions.id", ondelete="CASCADE"), primary_key=True)
-    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), primary_key=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    session_id = Column(GUID, ForeignKey("planning_sessions.id", ondelete="CASCADE"), primary_key=True)
+    venue_id = Column(GUID, ForeignKey("venues.id", ondelete="CASCADE"), primary_key=True)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     vote = Column(Integer, nullable=False)  # -1 (veto), 0 (neutral), 1 (like), 2 (love)
     comment = Column(Text)
     voted_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
