@@ -8,8 +8,7 @@ from app.config import settings
 from app.database import init_db
 
 # Import routers
-from app.routers import users
-# from app.routers import venues, sessions, collaboration, intelligence
+from app.routers import users, venues, sessions, collaboration
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -59,7 +58,6 @@ async def health_check():
 
 # Include routers
 app.include_router(users.router, prefix="/api/users", tags=["users"])
-# app.include_router(venues.router, prefix="/api/venues", tags=["venues"])
-# app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
-# app.include_router(collaboration.router, prefix="/api", tags=["collaboration"])
-# app.include_router(intelligence.router, prefix="/api/intelligence", tags=["intelligence"])
+app.include_router(venues.router, prefix="/api/venues", tags=["venues"])
+app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
+app.include_router(collaboration.router, prefix="/api", tags=["collaboration"])
